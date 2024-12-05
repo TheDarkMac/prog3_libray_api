@@ -1,0 +1,184 @@
+openapi: 3.0.0
+info:
+  title: School Management API
+  version: 1.0.0
+  description: API of a school management with groups and student details.
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/HEIANDO14/student/1.0.0
+  - url: "https:/hei-school.com"
+paths:
+  /students:
+    get:
+      summary: get all students
+      parameters:
+        - name: groupName
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: list of books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+
+    post:
+      summary: add a book
+      description: Add new book to the library.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+      responses:
+        '201':
+          description: book created with success
+
+    put:
+      summary: Modify a book
+      description: update a book (idempotent).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+      responses:
+        '200':
+          description: book update with success
+
+    delete:
+      summary: delete a book
+      description: delete book with its ID.
+      parameters:
+        - name: id
+          in: query
+          description: book ID's to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: bokk deleted with success
+
+  /groups:
+    get:
+      summary: get the list of all groups
+      parameters:
+        - name: groupName
+          in: query
+          description: Filter with the name of the author
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of authors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+
+    post:
+      summary: add an author
+      description: create a new author.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+      responses:
+        '201':
+          description: author created with success
+
+    put:
+      summary: modify an author
+      description: update  author(idempotent).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+      responses:
+        '200':
+          description: update author with success
+
+    delete:
+      summary: delete an author
+      description: delete author with his ID.
+      parameters:
+        - name: id
+          in: query
+          description: author's ID to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: author delete with success
+
+components:
+  schemas:
+    Student:
+      type: object
+      properties:
+        id:
+          type: string
+          description: unique student identify
+        studentName:
+          type: string
+          description: student name's
+        sex:
+          type: string
+          enum:
+            - M
+            - W
+        birthdate:
+          type: string
+          format: date
+        reference:
+          type: string
+          example: STD21001
+        group:
+          type: string
+    Group:
+      type: object
+      properties:
+        id:
+          type: string
+          description: unique group identifier
+        groupName:
+          type: string
+          description: group name's
+        promotion:
+          type: string
+          description: the letter describe the year of the group (ex G means 2021-2022)
+          enum:
+            - G
+            - H
+            - J
+            - K
+        studentNb:
+          type: number
+          description: this is the number of all student on a group
+        studens:
+          type: array
+          items:
+            $ref: "#/components/schemas/Student"
