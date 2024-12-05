@@ -1,0 +1,183 @@
+openapi: 3.0.0
+info:
+  title: Library Management API
+  version: 1.0.0
+  description: API of a library with books and authors details.
+servers:
+  - url: "https:/library.com"
+paths:
+  /books:
+    get:
+      summary: get all books
+      parameters:
+        - name: bookName
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: list of books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+
+    post:
+      summary: add a book
+      description: Add new book to the library.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '201':
+          description: book created with success
+
+    put:
+      summary: Modify a book
+      description: update a book (idempotent).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+      responses:
+        '200':
+          description: book update with success
+
+    delete:
+      summary: delete a book
+      description: delete book with its ID.
+      parameters:
+        - name: id
+          in: query
+          description: book ID's to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: bokk deleted with success
+
+  /authors:
+    get:
+      summary: get the list of all authors
+      parameters:
+        - name: authorName
+          in: query
+          description: Filter with the name of the author
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of authors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+
+    post:
+      summary: add an author
+      description: create a new author.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+      responses:
+        '201':
+          description: author created with success
+
+    put:
+      summary: modify an author
+      description: update  author(idempotent).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Author'
+      responses:
+        '200':
+          description: update author with success
+
+    delete:
+      summary: delete an author
+      description: delete author with his ID.
+      parameters:
+        - name: id
+          in: query
+          description: author's ID to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: author delete with success
+
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+          description: unique book identify
+        bookName:
+          type: string
+          description: book name's
+        author:
+          type: string
+          description: author name's
+        pageNumbers:
+          type: integer
+          description: page numbers
+        topic:
+          type: string
+          description: book subject
+          enum:
+            - ROMANCE
+            - COMEDY
+            - OTHER
+        releaseDate:
+          type: string
+          format: date
+          description: realise date
+
+    Author:
+      type: object
+      properties:
+        id:
+          type: string
+          description: unique author identifier
+        name:
+          type: string
+          description: author name's
+        sex:
+          type: string
+          description: author sex
+          enum:
+            - M
+            - F
