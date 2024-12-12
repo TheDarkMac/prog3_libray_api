@@ -177,6 +177,8 @@ components:
         groupName:
           type: string
           description: group name's
+        groupYear:
+          type: integer
         promotion:
           type: string
           description: the letter describe the year of the group (ex G means 2021-2022)
