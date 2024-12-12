@@ -4,7 +4,6 @@ info:
   version: 1.0.0
   description: API of a school management with groups and student details.
 servers:
-  # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/HEIANDO14/student/1.0.0
   - url: "https:/hei-school.com"
@@ -18,15 +17,9 @@ paths:
           required: false
           schema:
             type: string
-        - name: startDate
-          in: query
-          required: false
-          schema:
-            type: string
-            format: date
       responses:
         '200':
-          description: list of books
+          description: list of students
           content:
             application/json:
               schema:
@@ -35,8 +28,7 @@ paths:
                   $ref: '#/components/schemas/Student'
 
     post:
-      summary: add a book
-      description: Add new book to the library.
+      description: Add new student
       requestBody:
         required: true
         content:
@@ -45,11 +37,10 @@ paths:
               $ref: '#/components/schemas/Student'
       responses:
         '201':
-          description: book created with success
+          description: student add with success
 
     put:
-      summary: Modify a book
-      description: update a book (idempotent).
+      description: update a student information (idempotent).
       requestBody:
         required: true
         content:
@@ -58,21 +49,25 @@ paths:
               $ref: '#/components/schemas/Student'
       responses:
         '200':
-          description: book update with success
+          description: student information update with success
 
     delete:
-      summary: delete a book
-      description: delete book with its ID.
+      description: delete student with his ID.
       parameters:
         - name: id
           in: query
-          description: book ID's to delete
+          description: student ID's to delete
           required: true
           schema:
             type: string
       responses:
         '204':
-          description: bokk deleted with success
+          description: student deleted with success
+  /students/{students}/group:
+    put:
+      responses:
+        202:
+          description: 'success'
 
   /groups:
     get:
@@ -80,13 +75,19 @@ paths:
       parameters:
         - name: groupName
           in: query
-          description: Filter with the name of the author
+          description: Filter with the name of the group
           required: false
           schema:
             type: string
+        - name: groupYear
+          in: query
+          required: false
+          schema:
+            type: string
+
       responses:
         '200':
-          description: List of authors
+          description: List of groups
           content:
             application/json:
               schema:
@@ -95,8 +96,7 @@ paths:
                   $ref: '#/components/schemas/Group'
 
     post:
-      summary: add an author
-      description: create a new author.
+      description: create a new group.
       requestBody:
         required: true
         content:
@@ -105,11 +105,11 @@ paths:
               $ref: '#/components/schemas/Group'
       responses:
         '201':
-          description: author created with success
+          description: group created with success
 
     put:
-      summary: modify an author
-      description: update  author(idempotent).
+      summary: modify a group
+      description: update group(idempotent).
       requestBody:
         required: true
         content:
@@ -118,21 +118,21 @@ paths:
               $ref: '#/components/schemas/Group'
       responses:
         '200':
-          description: update author with success
+          description: update group with success
 
     delete:
-      summary: delete an author
-      description: delete author with his ID.
+      summary: delete a group
+      description: delete group with his ID.
       parameters:
         - name: id
           in: query
-          description: author's ID to delete
+          description: group's ID to delete
           required: true
           schema:
             type: string
       responses:
         '204':
-          description: author delete with success
+          description: group delete with success
 
 components:
   schemas:
@@ -142,6 +142,11 @@ components:
         id:
           type: string
           description: unique student identify
+      allOf:
+        - $ref: '#/components/schemas/CreateStudent'
+    CreateStudent:
+      type: object
+      properties:
         studentName:
           type: string
           description: student name's
@@ -156,14 +161,19 @@ components:
         reference:
           type: string
           example: STD21001
-        group:
-          type: string
+      allOf:
+        - $ref: '#/components/schemas/Group'
     Group:
       type: object
+      allOf:
+        - $ref: '#/components/schemas/CreateGroup'
       properties:
-        id:
+        groupId:
           type: string
           description: unique group identifier
+    CreateGroup:
+      type: object
+      properties:
         groupName:
           type: string
           description: group name's
@@ -178,7 +188,7 @@ components:
         studentNb:
           type: number
           description: this is the number of all student on a group
-        studens:
+        students:
           type: array
           items:
             $ref: "#/components/schemas/Student"
