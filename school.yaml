@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: School Management API
-  version: 1.0.0
+  version: 1.0.1
   description: API of a school management with groups and student details.
 servers:
   - description: SwaggerHub API Auto Mocking
@@ -14,7 +14,6 @@ paths:
       parameters:
         - name: groupName
           in: query
-          required: false
           schema:
             type: string
       responses:
@@ -34,7 +33,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Student'
+              $ref: '#/components/schemas/CreateStudent'
       responses:
         '201':
           description: student add with success
@@ -63,12 +62,80 @@ paths:
       responses:
         '204':
           description: student deleted with success
-  /students/{students}/group:
+  /students/{studentId}/group:
     put:
+      description: Associates a specific student with a group.
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
       responses:
-        202:
-          description: 'success'
-
+        '200':
+          description: Updated student resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '404':
+          description: Student not found
+  /students/group:
+    put:
+      description: Modifies the group associations of students.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  studentId:
+                    type: integer
+                  group:
+                    $ref: '#/components/schemas/Group'
+      responses:
+        '200':
+          description: List of updated students
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
+        '400':
+          description: Invalid input data
+  /students/{studentId}/groups/{groupId}:
+    put:
+      description: Updates the group association of a specific student.
+      parameters:
+        - name: studentId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: groupId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Updated student resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+        '404':
+          description: Student or Group not found
   /groups:
     get:
       summary: get the list of all groups
@@ -76,15 +143,12 @@ paths:
         - name: groupName
           in: query
           description: Filter with the name of the group
-          required: false
           schema:
             type: string
         - name: groupYear
           in: query
-          required: false
           schema:
             type: string
-
       responses:
         '200':
           description: List of groups
@@ -102,7 +166,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Group'
+              $ref: '#/components/schemas/CreateGroup'
       responses:
         '201':
           description: group created with success
@@ -136,15 +200,7 @@ paths:
 
 components:
   schemas:
-    Student:
-      type: object
-      properties:
-        id:
-          type: string
-          description: unique student identify
-      allOf:
-        - $ref: '#/components/schemas/CreateStudent'
-    CreateStudent:
+    StudentBase:
       type: object
       properties:
         studentName:
@@ -161,8 +217,18 @@ components:
         reference:
           type: string
           example: STD21001
+    Student:
+      type: object
+      properties:
+        id:
+          type: string
+          description: unique student identify
       allOf:
-        - $ref: '#/components/schemas/Group'
+        - $ref: '#/components/schemas/CreateStudent'
+    CreateStudent:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Student'
     Group:
       type: object
       allOf:
